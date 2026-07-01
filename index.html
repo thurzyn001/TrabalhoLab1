@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameStore Pro</title>
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="navbar">
+    <a href="#" id="logoLink" class="logo" style="cursor:pointer; text-decoration:none;">
+      <i class="fas fa-crown"></i>GameStore Pro
+    </a>
+    <div class="nav-links">
+      <a data-page="home"><i class="fas fa-home"></i> Início</a>
+      <a data-page="catalog"><i class="fas fa-store"></i> Catálogo</a>
+      <a data-page="history"><i class="fas fa-history"></i> Meus Pedidos</a>
+      <a data-page="admin" id="adminNavLink" class="hidden"><i class="fas fa-user-cog"></i> Admin</a>
+      <a data-page="cart"><i class="fas fa-shopping-cart"></i> Carrinho <span class="badge-cart" id="cartCount">0</span></a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <button id="btnLoginNav" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <button id="btnRegisterNav"><i class="fas fa-user-plus"></i> Registro</button>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <section id="page-home" class="page">
+      <h2 style="font-size:2.2rem;"><i class="fas fa-fire" style="color:#f0883e;"></i> Destaques</h2>
+      <p style="color:#8b949e; margin:6px 0 20px;">Os jogos mais procurados do momento.</p>
+      <div class="game-grid" id="homeGrid"></div>
+    </section>
+
+    <section id="page-catalog" class="page hidden">
+      <h2><i class="fas fa-gamepad"></i> Catálogo completo</h2>
+      <div class="search-section">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Buscar jogo..." />
+          <div class="autocomplete-list" id="autocompleteList"></div>
+        </div>
+        <div class="filter-group">
+          <select id="filterCategory"><option value="">Todos</option><option value="Ação">Ação</option><option value="Aventura">Aventura</option><option value="RPG">RPG</option><option value="FPS">FPS</option><option value="Corrida">Corrida</option><option value="Esporte">Esporte</option><option value="Estratégia">Estratégia</option></select>
+          <select id="filterMultiplayer"><option value="">Todos</option><option value="sim">Multiplayer</option><option value="nao">Singleplayer</option></select>
+          <button id="clearFilters"><i class="fas fa-times"></i> Limpar</button>
+        </div>
+      </div>
+      <div class="game-grid" id="catalogGrid"></div>
+    </section>
+
+    <section id="page-history" class="page hidden">
+      <h2><i class="fas fa-history"></i> Meus Pedidos</h2>
+      <p style="color:#8b949e; margin:6px 0 20px;">Acompanhe seus pedidos e solicite reembolso.</p>
+      <div id="userHistory" style="margin:20px 0;"></div>
+    </section>
+
+    <section id="page-admin" class="page hidden">
+      <h2><i class="fas fa-user-shield"></i> Painel Admin <span class="badge-admin">ADMIN</span></h2>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin:16px 0;">
+        <button id="btnAdminAdd" class="btn-primary" style="padding:10px 28px; border-radius:40px; border:none;"><i class="fas fa-plus"></i> Novo Jogo</button>
+        <button id="btnAdminLogout" style="padding:10px 28px; border-radius:40px; border:1px solid #f85149; color:#f85149; background:transparent;"><i class="fas fa-sign-out-alt"></i> Sair</button>
+      </div>
+      
+      <h3 style="margin-top:30px;"><i class="fas fa-exchange-alt"></i> Gerenciar Reembolsos</h3>
+      <div id="adminRefunds" style="margin:16px 0;"></div>
+      
+      <h3 style="margin-top:30px;"><i class="fas fa-history"></i> Histórico de Compras</h3>
+      <div id="adminHistory" style="margin:16px 0;"></div>
+      
+      <h3 style="margin-top:30px;"><i class="fas fa-gamepad"></i> Gerenciar Jogos</h3>
+      <div class="game-grid" id="adminGrid"></div>
+    </section>
+
+    <section id="page-cart" class="page hidden">
+      <h2><i class="fas fa-shopping-cart"></i> Carrinho</h2>
+      <div id="cartItems" style="margin:20px 0; background:#161b22; border-radius:20px; padding:20px; border:1px solid #30363d;"></div>
+      <div id="cartTotal" style="font-size:1.4rem; font-weight:600; color:#f0883e; margin:16px 0;"></div>
+      <button id="checkoutBtn" class="btn-primary" style="padding:14px 40px; border-radius:40px; border:none; font-weight:600;"><i class="fas fa-check"></i> Finalizar compra</button>
+    </section>
+
+    <section id="page-login" class="page hidden">
+      <div class="form-box" id="loginForm">
+        <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+        <div id="loginLockInfo" class="lock-info hidden"></div>
+        <input id="loginUser" placeholder="Usuário ou Email" autocomplete="username">
+        <input id="loginPass" type="password" placeholder="Senha" autocomplete="current-password">
+        <button id="btnLoginSubmit"><i class="fas fa-arrow-right"></i> Entrar</button>
+        <div class="switch-link">Não tem conta? <a id="switchToRegister">Registre-se</a></div>
+      </div>
+    </section>
+
+    <section id="page-register" class="page hidden">
+      <div class="form-box" id="registerForm">
+        <h2><i class="fas fa-user-plus"></i> Registro</h2>
+        <input id="regUser" placeholder="Usuário (mínimo 3 caracteres)">
+        <input id="regEmail" placeholder="Email (ex: usuario@email.com)">
+        <input id="regPass" type="password" placeholder="Senha (mínimo 6 caracteres)">
+        <input id="regPassConfirm" type="password" placeholder="Confirmar Senha">
+        <input id="regVoucher" placeholder="Voucher Admin (opcional)" style="border-color:#a371f7;">
+        <button id="btnRegisterSubmit"><i class="fas fa-user-check"></i> Criar conta</button>
+        <div class="switch-link">Já tem conta? <a id="switchToLogin">Login</a></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL DETALHES -->
+  <div id="detailModal" class="modal-overlay hidden">
+    <div class="modal-detail" id="detailContent">
+      <img id="detailImg" src="" alt="" />
+      <h2 id="detailName"></h2>
+      <div class="info-line"><span><i class="fas fa-tag"></i> <span id="detailCategory"></span></span><span><i class="fas fa-users"></i> <span id="detailMultiplayer"></span></span></div>
+      <div class="desc" id="detailDesc"></div>
+      <div class="price-big" id="detailPrice"></div>
+      <div class="modal-actions-detail">
+        <button class="btn-buy" id="detailAddToCart"><i class="fas fa-cart-plus"></i> Adicionar ao Carrinho</button>
+        <button class="btn-close-detail" id="detailCloseBtn"><i class="fas fa-times"></i> Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAÇÃO COMPRA -->
+  <div id="checkoutModal" class="modal-overlay hidden">
+    <div class="modal-detail" style="text-align:center;">
+      <i class="fas fa-trophy" style="font-size:4rem; color:#f0883e;"></i>
+      <h2 style="margin:16px 0;">Parabéns pela sua compra!</h2>
+      <p style="color:#8b949e; margin:8px 0;">Seu pedido foi realizado com sucesso.</p>
+      <div style="background:#0b0e14; padding:20px; border-radius:16px; margin:20px 0; border:1px solid #58a6ff;">
+        <p style="color:#8b949e; font-size:0.9rem;">Código de confirmação:</p>
+        <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-top:8px; flex-wrap:wrap;">
+          <span id="checkoutCode" style="font-family:monospace; color:#58a6ff; font-size:1.2rem; word-break:break-all;"></span>
+          <button id="copyCheckoutCode" style="background:#238636; border:none; padding:8px 20px; border-radius:30px; color:white; cursor:pointer;"><i class="fas fa-copy"></i> Copiar</button>
+        </div>
+      </div>
+      <div style="background:#161b22; padding:16px; border-radius:12px; margin:16px 0; text-align:left;">
+        <p style="color:#8b949e; font-size:0.9rem;">Itens comprados:</p>
+        <div id="checkoutItems" style="margin-top:8px;"></div>
+        <div style="margin-top:12px; font-weight:600; color:#f0883e;" id="checkoutTotal"></div>
+      </div>
+      <button class="btn-close-detail" id="checkoutCloseBtn" style="padding:12px 40px; border-radius:40px; border:none; font-weight:600; cursor:pointer;"><i class="fas fa-check"></i> Ok, entendi!</button>
+    </div>
+  </div>
+
+  <!-- MODAL CRUD - APENAS ADMIN -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal-detail" style="max-width:500px;">
+      <h3 id="modalTitle"><i class="fas fa-edit"></i> Editar Jogo</h3>
+      <input type="hidden" id="modalGameId">
+      <input id="modalGameName" placeholder="Nome do jogo" required>
+      <input id="modalGameImage" placeholder="URL da imagem (ex: https://...)">
+      <input id="modalGamePrice" placeholder="Preço (ex: 99.90)" required>
+      <select id="modalCategory">
+        <option value="Ação">Ação</option>
+        <option value="Aventura">Aventura</option>
+        <option value="RPG">RPG</option>
+        <option value="FPS">FPS</option>
+        <option value="Corrida">Corrida</option>
+        <option value="Esporte">Esporte</option>
+        <option value="Estratégia">Estratégia</option>
+      </select>
+      <select id="modalMultiplayer">
+        <option value="sim">Multiplayer</option>
+        <option value="nao">Singleplayer</option>
+      </select>
+      <textarea id="modalDesc" rows="4" placeholder="Descrição do jogo"></textarea>
+      <div class="modal-actions-detail">
+        <button class="btn-buy" id="modalSave"><i class="fas fa-save"></i> Salvar</button>
+        <button class="btn-close-detail" id="modalCancel"><i class="fas fa-times"></i> Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL REEMBOLSO -->
+  <div id="refundModal" class="modal-overlay hidden">
+    <div class="modal-detail" style="max-width:500px;">
+      <h3><i class="fas fa-hand-holding-usd" style="color:#f0883e;"></i> Solicitar Reembolso</h3>
+      <p style="color:#8b949e; margin:12px 0;">Deseja realmente solicitar reembolso para este pedido?</p>
+      <div style="background:#0b0e14; padding:16px; border-radius:12px; margin:12px 0;">
+        <p><strong>Pedido:</strong> <span id="refundOrderCode"></span></p>
+        <p style="color:#8b949e; font-size:0.9rem;">Itens: <span id="refundOrderItems"></span></p>
+        <p style="color:#f0883e; font-weight:600;">Total: <span id="refundOrderTotal"></span></p>
+      </div>
+      <p style="color:#8b949e; font-size:0.9rem;">O reembolso será analisado por um administrador.</p>
+      <div class="modal-actions-detail">
+        <button class="btn-buy" id="confirmRefundBtn"><i class="fas fa-check"></i> Confirmar Reembolso</button>
+        <button class="btn-close-detail" id="cancelRefundBtn"><i class="fas fa-times"></i> Cancelar</button>
+      </div>
+      <input type="hidden" id="refundOrderIndex">
+    </div>
+  </div>
+
+  <footer href="#home" class="footer"><span><i class="far fa-copyright"></i> 2026 GameStore Pro</span><span><i class="fas fa-database"></i> Dados locais</span></footer>
+</div>
+</body>
+</html>
